@@ -128,15 +128,17 @@ export class GitHubService {
     }
   }
 
-  async getUserCommits(username: string): Promise<Commit[]> {
+  async getUserCommits(username: string): Promise<(Commit & { repoName: string })[]> {
     try {
       const repos = await this.getUserRepositories(username, 1, 10);
-      const allCommits: Commit[] = [];
+      const allCommits: (Commit & { repoName: string })[] = [];
       
       for (const repo of repos) {
         if (!repo.private) { // Only fetch from public repos
           const commits = await this.getRepositoryCommits(username, repo.name);
-          allCommits.push(...commits);
+          // Add repoName to each commit
+          const commitsWithRepo = commits.map(c => ({ ...c, repoName: repo.name }));
+          allCommits.push(...commitsWithRepo);
         }
       }
       
