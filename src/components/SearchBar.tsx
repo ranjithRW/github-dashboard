@@ -49,7 +49,7 @@ export const SearchBar: React.FC<SearchBarProps> = ({ onSearch, loading }) => {
         </div>
       </form>
       
-      <div className="flex flex-wrap gap-2 justify-center mt-4">
+      {/* <div className="flex flex-wrap gap-2 justify-center mt-4">
         <span className="text-gray-400 text-sm">Try: </span>
         {['octocat', 'torvalds', 'gaearon', 'sindresorhus'].map(user => (
           <button
@@ -61,7 +61,7 @@ export const SearchBar: React.FC<SearchBarProps> = ({ onSearch, loading }) => {
             {user}
           </button>
         ))}
-      </div>
+      </div> */}
     </div>
   );
 };

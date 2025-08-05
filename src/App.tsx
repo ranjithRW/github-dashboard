@@ -90,7 +90,7 @@ function App() {
           <div className="mb-8 flex flex-col md:flex-row md:items-center gap-4">
             <label className="font-semibold text-gray-700">Select Repository:</label>
             <select
-              className="border rounded px-3 py-2 min-w-[200px]"
+              className="border border-black rounded px-3 py-2 min-w-[200px]"
               value={selectedRepo || ''}
               onChange={e => setSelectedRepo(e.target.value || null)}
             >
