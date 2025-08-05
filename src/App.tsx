@@ -19,7 +19,6 @@ interface DashboardData {
   pullRequests: any[];
 }
 
-
 function App() {
   const [data, setData] = useState<DashboardData | null>(null);
   const [loading, setLoading] = useState(false);
@@ -29,9 +28,8 @@ function App() {
   const fetchUserData = async (username: string) => {
     setLoading(true);
     setError(null);
-    setSelectedRepo(null); // Reset repo selection on new user
+    setSelectedRepo(null);
     try {
-      // ...existing code...
       const user = await githubService.getUser(username);
       const repositories = await githubService.getUserRepositories(username);
       const activities = await githubService.getUserActivity(username);
@@ -39,20 +37,19 @@ function App() {
       const { issues, pullRequests } = await githubService.getIssuesAndPRs(username);
       setData({ user, repositories, activities, commits, issues, pullRequests });
     } catch (err: any) {
-      // ...existing code...
       setError(
-        err.response?.status === 404 
+        err.response?.status === 404
           ? `User "${username}" not found on GitHub`
           : err.response?.status === 403
-          ? 'API rate limit exceeded. Please add your GitHub token in .env file.'
-          : 'Failed to fetch user data. Please try again.'
+            ? 'API rate limit exceeded. Please add your GitHub token in .env file.'
+            : 'Failed to fetch user data. Please try again.'
       );
     } finally {
       setLoading(false);
     }
   };
 
-  const tokenWarning = !import.meta.env.VITE_GITHUB_TOKEN || 
+  const tokenWarning = !import.meta.env.VITE_GITHUB_TOKEN ||
     import.meta.env.VITE_GITHUB_TOKEN === 'your_github_personal_access_token_here';
 
   // Filter data for selected repo
@@ -60,7 +57,6 @@ function App() {
     if (!data || !selectedRepo) return null;
     const repo = data.repositories.find(r => r.name === selectedRepo);
     if (!repo) return null;
-    // Filter commits, issues, PRs for this repo
     const commits = (data.commits as (Commit & { repoName: string })[]).filter(c => c.repoName === selectedRepo);
     const issues = data.issues.filter((i: any) => i.repository?.name === selectedRepo);
     const pullRequests = data.pullRequests.filter((pr: any) => pr.repository?.name === selectedRepo);
@@ -68,17 +64,19 @@ function App() {
   }, [data, selectedRepo]);
 
   return (
-    <div className="min-h-screen bg-white">
-      <div className="container mx-auto px-4 py-8">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100">
+      <div className="container mx-auto px-4 py-8 max-w-7xl">
         {tokenWarning && (
-          // ...existing code...
-          <div className="bg-gray-800 border border-gray-600 rounded-lg p-4 mb-6 flex items-start gap-3">
-            <AlertTriangle className="w-5 h-5 text-white mt-0.5 flex-shrink-0" />
+          <div className="bg-white border border-amber-200 rounded-lg p-4 mb-6 flex items-start gap-3 shadow-sm">
+            <AlertTriangle className="w-5 h-5 text-amber-600 mt-0.5 flex-shrink-0" />
             <div>
-              <h3 className="text-white font-semibold mb-1">GitHub Token Required</h3>
-              <p className="text-gray-300 text-sm">
-                To access full functionality and avoid rate limits, please add your GitHub Personal Access Token to the .env file.
-                Get one from: <a href="https://github.com/settings/tokens" target="_blank" rel="noopener noreferrer" className="underline hover:text-white">GitHub Settings</a>
+              <h3 className="text-gray-900 font-semibold mb-1">GitHub Token Recommended</h3>
+              <p className="text-gray-600 text-sm">
+                Add your GitHub Personal Access Token to avoid rate limits.
+                <a href="https://github.com/settings/tokens" target="_blank" rel="noopener noreferrer"
+                  className="text-blue-600 hover:text-blue-800 underline ml-1">
+                  Get token here
+                </a>
               </p>
             </div>
           </div>
@@ -86,52 +84,60 @@ function App() {
 
         <SearchBar onSearch={fetchUserData} loading={loading} />
 
-        {data && !loading && (
-          <div className="mb-8 flex flex-col md:flex-row md:items-center gap-4">
-            <label className="font-semibold text-gray-700">Select Repository:</label>
-            <select
-              className="border border-black rounded px-3 py-2 min-w-[200px]"
-              value={selectedRepo || ''}
-              onChange={e => setSelectedRepo(e.target.value || null)}
-            >
-              <option value="">-- Overall Dashboard --</option>
-              {data.repositories.map(repo => (
-                <option key={repo.name} value={repo.name}>{repo.name}</option>
-              ))}
-            </select>
+        {data && !loading && !error &&(
+          <div className="mb-8 bg-white rounded-lg p-6 shadow-sm border border-gray-200">
+            <div className="flex flex-col md:flex-row md:items-center gap-4">
+              <label className="font-semibold text-gray-700 text-sm uppercase tracking-wide">
+                Repository Filter:
+              </label>
+              <select
+                className="border border-gray-300 rounded-md px-4 py-2 bg-white text-gray-900 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 min-w-[250px] "
+                value={selectedRepo || ''}
+                onChange={e => setSelectedRepo(e.target.value || null)}
+              >
+                <option value="">All Repositories - Overview</option>
+                  {data.repositories.map(repo => (
+                    <option key={repo.name} value={repo.name}>{repo.name}</option>
+                  ))}
+              </select>
+            </div>
           </div>
         )}
 
         {loading && (
-          <div className="flex justify-center">
+          <div className="flex justify-center py-16">
             <LoadingSpinner size="lg" text="Fetching GitHub data..." />
           </div>
         )}
 
         {error && (
-          <div className="bg-gray-800 border border-gray-600 rounded-lg p-6 text-center">
-            <AlertTriangle className="w-12 h-12 text-white mx-auto mb-4" />
-            <h3 className="text-white font-semibold text-lg mb-2">Error</h3>
-            <p className="text-gray-300">{error}</p>
+          <div className="bg-white border border-red-200 rounded-lg p-8 text-center shadow-sm">
+            <AlertTriangle className="w-16 h-16 text-red-500 mx-auto mb-4" />
+            <h3 className="text-gray-900 font-semibold text-lg mb-2">Unable to Load Data</h3>
+            <p className="text-gray-600">{error}</p>
           </div>
         )}
 
-        {/* Per-repo dashboard */}
-        {repoData && !loading && (
+        {/* Repository-specific dashboard */}
+        {repoData && !loading && !error &&(
           <div className="space-y-8">
-            <h2 className="text-xl font-bold text-gray-700 mb-2">Repository: {repoData.repo.name}</h2>
-            {/* You can customize which components to show for a repo */}
+            <div className="bg-white rounded-lg p-6 shadow-sm border border-gray-200">
+              <h2 className="text-2xl font-bold text-gray-900 mb-2">
+                Repository Analysis: {repoData.repo.name}
+              </h2>
+              <p className="text-gray-600">Detailed metrics for the selected repository</p>
+            </div>
+
             <ContributionHeatmap commits={repoData.commits} />
             <div className="grid grid-cols-1 xl:grid-cols-2 gap-8">
               <CommitChart commits={repoData.commits} />
               <IssuesPRChart issues={repoData.issues} pullRequests={repoData.pullRequests} />
             </div>
-            {/* Optionally, show repo details or activity timeline for this repo */}
           </div>
         )}
 
-        {/* Overall dashboard (when no repo selected) */}
-        {data && !selectedRepo && !loading && (
+        {/* Overall dashboard */}
+        {data && !selectedRepo && !loading && !error &&(
           <div className="space-y-8">
             <UserProfile user={data.user} />
             <div className="grid grid-cols-1 xl:grid-cols-2 gap-8">
@@ -147,11 +153,11 @@ function App() {
         )}
 
         {!data && !loading && !error && (
-          <div className="text-center py-16">
-            <Github className="w-24 h-24 text-gray-600 mx-auto mb-6" />
-            <h2 className="text-2xl font-bold text-gray-400 mb-4">Ready to Explore</h2>
-            <p className="text-gray-500 text-lg">
-              Enter a GitHub username above to start analyzing their activity and contributions.
+          <div className="text-center py-4">
+            <Github className="w-20 h-20 text-gray-400 mx-auto mb-6" />
+            <h2 className="text-3xl font-bold text-gray-900 mb-4">GitHub Analytics Dashboard</h2>
+            <p className="text-gray-600 text-lg max-w-md mx-auto">
+              Enter a GitHub username above to start exploring detailed analytics and insights.
             </p>
           </div>
         )}

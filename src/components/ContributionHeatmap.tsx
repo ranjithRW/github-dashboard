@@ -53,7 +53,7 @@ export const ContributionHeatmap: React.FC<ContributionHeatmapProps> = ({ commit
         const [date, count] = params.data;
         return `${format(new Date(date), 'MMM d, yyyy')}<br/>Commits: ${count}`;
       },
-      backgroundColor: 'rgba(0, 0, 0, 0.8)',
+      backgroundColor: 'red',
       borderColor: '#333',
       textStyle: {
         color: '#fff'
@@ -86,10 +86,10 @@ export const ContributionHeatmap: React.FC<ContributionHeatmapProps> = ({ commit
       bottom: 10,
       pieces: [
         { min: 0, max: 0, color: '#000000' },
-        { min: 1, max: Math.ceil(maxCommits * 0.25), color: '#404040' },
-        { min: Math.ceil(maxCommits * 0.25) + 1, max: Math.ceil(maxCommits * 0.5), color: '#808080' },
-        { min: Math.ceil(maxCommits * 0.5) + 1, max: Math.ceil(maxCommits * 0.75), color: '#c0c0c0' },
-        { min: Math.ceil(maxCommits * 0.75) + 1, max: maxCommits, color: '#ffffff' }
+        { min: 1, max: Math.ceil(maxCommits * 0.25), color: 'blue' },
+        { min: Math.ceil(maxCommits * 0.25) + 1, max: Math.ceil(maxCommits * 0.5), color: 'yellow' },
+        { min: Math.ceil(maxCommits * 0.5) + 1, max: Math.ceil(maxCommits * 0.75), color: 'green' },
+        { min: Math.ceil(maxCommits * 0.75) + 1, max: maxCommits, color: 'pink' }
       ],
       textStyle: {
         color: '#9ca3af'
@@ -113,5 +113,5 @@ export const ContributionHeatmap: React.FC<ContributionHeatmapProps> = ({ commit
         theme="dark"
       />
     </div>
-  );
+  );  
 };

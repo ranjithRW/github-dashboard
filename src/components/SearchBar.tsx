@@ -11,51 +11,64 @@ export const SearchBar: React.FC<SearchBarProps> = ({ onSearch, loading }) => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (username.trim()) {
+    if (username.trim() && !loading) {
       onSearch(username.trim());
     }
   };
 
   return (
-    <div className="bg-black rounded-xl p-8 shadow-xl border border-gray-800 mb-8">
-      <div className="text-center mb-6">
+    <div className="bg-white rounded-xl p-8 shadow-lg border border-gray-200 mb-8">
+      <div className="text-center mb-8">
         <div className="flex items-center justify-center gap-3 mb-4">
-          <Github className="w-10 h-10 text-white" />
-          <h1 className="text-4xl font-bold text-white">GitHub Analytics Dashboard</h1>
+          <div className="p-3 bg-gray-900 rounded-lg">
+            <Github className="w-8 h-8 text-white" />
+          </div>
+          <h1 className="text-4xl font-bold text-gray-900">GitHub Analytics</h1>
         </div>
-        <p className="text-gray-400 text-lg">
-          Discover detailed insights about any GitHub user's activity and contributions
+        <p className="text-gray-600 text-lg max-w-2xl mx-auto">
+          Analyze GitHub profiles with comprehensive insights into activity, contributions, and project metrics
         </p>
       </div>
       
       <form onSubmit={handleSubmit} className="max-w-2xl mx-auto">
         <div className="relative">
-          <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+          <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+            <Search className="h-5 w-5 text-gray-400" />
+          </div>
           <input
             type="text"
             value={username}
             onChange={(e) => setUsername(e.target.value)}
-            placeholder="Enter GitHub username (e.g., octocat)"
-            className="w-full pl-12 pr-32 py-4 bg-gray-900 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:border-white focus:outline-none text-lg"
+            placeholder="Enter GitHub username (e.g., octocat, torvalds)"
+            className="block w-full pl-12 pr-32 py-4 border border-gray-300 rounded-lg text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-lg"
             disabled={loading}
           />
-          <button
-            type="submit"
-            disabled={loading || !username.trim()}
-            className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-white hover:bg-gray-200 disabled:bg-gray-600 disabled:cursor-not-allowed text-black px-6 py-2 rounded-lg font-medium transition-colors"
-          >
-            {loading ? 'Searching...' : 'Analyze'}
-          </button>
+          <div className="absolute inset-y-0 right-0 flex items-center pr-2">
+            <button
+              type="submit"
+              disabled={loading || !username.trim()}
+              className="bg-gray-900 hover:bg-gray-800 disabled:bg-gray-400 disabled:cursor-not-allowed text-white px-6 py-2.5 rounded-md font-medium transition-colors duration-200 text-sm"
+            >
+              {loading ? (
+                <div className="flex items-center gap-2">
+                  <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                  Analyzing...
+                </div>
+              ) : (
+                'Analyze Profile'
+              )}
+            </button>
+          </div>
         </div>
       </form>
       
-      {/* <div className="flex flex-wrap gap-2 justify-center mt-4">
-        <span className="text-gray-400 text-sm">Try: </span>
+      {/* <div className="flex flex-wrap gap-3 justify-center mt-6">
+        <span className="text-gray-500 text-sm">Popular examples: </span>
         {['octocat', 'torvalds', 'gaearon', 'sindresorhus'].map(user => (
           <button
             key={user}
-            onClick={() => onSearch(user)}
-            className="text-gray-300 hover:text-white text-sm underline"
+            onClick={() => !loading && onSearch(user)}
+            className="text-blue-600 hover:text-blue-800 text-sm font-medium underline-offset-2 hover:underline disabled:text-gray-400 disabled:cursor-not-allowed"
             disabled={loading}
           >
             {user}
