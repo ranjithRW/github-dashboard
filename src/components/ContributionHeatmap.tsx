@@ -8,17 +8,17 @@ interface ContributionHeatmapProps {
 }
 
 export const ContributionHeatmap: React.FC<ContributionHeatmapProps> = ({ commits }) => {
+  const isMobile = window.innerWidth < 640; // Tailwind 'sm' breakpoint
+
   const heatmapData = useMemo(() => {
     const now = new Date();
     const yearStart = startOfYear(now);
     const yearEnd = endOfYear(now);
-    
-    // Get all days of the current year
+
     const days = eachDayOfInterval({ start: yearStart, end: yearEnd });
-    
-    // Count commits per day
+
     const commitCounts = new Map<string, number>();
-    
+
     commits.forEach(commit => {
       const date = new Date(commit.commit.author.date);
       if (isAfter(date, yearStart) && isBefore(date, yearEnd)) {
@@ -26,8 +26,7 @@ export const ContributionHeatmap: React.FC<ContributionHeatmapProps> = ({ commit
         commitCounts.set(dateKey, (commitCounts.get(dateKey) || 0) + 1);
       }
     });
-    
-    // Create data array for heatmap
+
     return days.map(day => {
       const dateKey = format(day, 'yyyy-MM-dd');
       const count = commitCounts.get(dateKey) || 0;
@@ -35,35 +34,35 @@ export const ContributionHeatmap: React.FC<ContributionHeatmapProps> = ({ commit
     });
   }, [commits]);
 
-  const maxCommits = Math.max(...heatmapData.map(([_, count]) => count as number));
+  const maxCommits = Math.max(...heatmapData.map(([_, count]) => count as number), 1);
 
   const option = {
     title: {
       text: `${format(new Date(), 'yyyy')} Contribution Activity`,
       textStyle: {
         color: '#fff',
-        fontSize: 18,
+        fontSize: isMobile ? 14 : 18,
         fontWeight: 'bold'
       },
       left: 'center',
-      top: 20
+      top: 10
     },
     tooltip: {
       formatter: (params: any) => {
         const [date, count] = params.data;
         return `${format(new Date(date), 'MMM d, yyyy')}<br/>Commits: ${count}`;
       },
-      backgroundColor: 'red',
+      backgroundColor: 'rgba(0,0,0,0.7)',
       borderColor: '#333',
       textStyle: {
         color: '#fff'
       }
     },
     calendar: {
-      top: 80,
-      left: 50,
-      right: 50,
-      cellSize: ['auto', 13],
+      top: isMobile ? 50 : 80,
+      left: isMobile ? 20 : 50,
+      right: isMobile ? 20 : 50,
+      cellSize: isMobile ? ['auto', 12] : ['auto', 15],
       range: format(new Date(), 'yyyy'),
       itemStyle: {
         borderWidth: 0.5,
@@ -71,10 +70,12 @@ export const ContributionHeatmap: React.FC<ContributionHeatmapProps> = ({ commit
       },
       yearLabel: { show: false },
       dayLabel: {
-        color: '#9ca3af'
+        color: '#9ca3af',
+        fontSize: isMobile ? 8 : 12
       },
       monthLabel: {
-        color: '#9ca3af'
+        color: '#9ca3af',
+        fontSize: isMobile ? 10 : 12
       }
     },
     visualMap: {
@@ -92,7 +93,8 @@ export const ContributionHeatmap: React.FC<ContributionHeatmapProps> = ({ commit
         { min: Math.ceil(maxCommits * 0.75) + 1, max: maxCommits, color: 'pink' }
       ],
       textStyle: {
-        color: '#9ca3af'
+        color: '#9ca3af',
+        fontSize: isMobile ? 10 : 12
       }
     },
     series: [
@@ -106,12 +108,12 @@ export const ContributionHeatmap: React.FC<ContributionHeatmapProps> = ({ commit
   };
 
   return (
-    <div className="bg-white rounded-xl p-6 shadow-xl border border-gray-800">
+    <div className="bg-white rounded-xl p-4 sm:p-6 shadow-xl border border-gray-800">
       <ReactECharts
         option={option}
-        style={{ height: '250px', width: '100%' }}
+        style={{ height: isMobile ? '260px' : '280px', width: '100%' }}
         theme="dark"
       />
     </div>
-  );  
+  );
 };

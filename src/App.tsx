@@ -105,7 +105,7 @@ function App() {
         )}
 
         {loading && (
-          <div className="flex justify-center py-16">
+          <div className="flex justify-center py-4">
             <LoadingSpinner size="lg" text="Fetching GitHub data..." />
           </div>
         )}

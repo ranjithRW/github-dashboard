@@ -8,6 +8,8 @@ interface IssuesPRChartProps {
 }
 
 export const IssuesPRChart: React.FC<IssuesPRChartProps> = ({ issues, pullRequests }) => {
+  const isMobile = window.innerWidth < 640;
+
   const openIssues = issues.filter(issue => issue.state === 'open').length;
   const closedIssues = issues.filter(issue => issue.state === 'closed').length;
   const openPRs = pullRequests.filter(pr => pr.state === 'open').length;
@@ -22,7 +24,7 @@ export const IssuesPRChart: React.FC<IssuesPRChartProps> = ({ issues, pullReques
       text: 'Issues & Pull Requests Overview',
       textStyle: {
         color: '#1f2937',
-        fontSize: 18,
+        fontSize: isMobile ? 16 : 18,
         fontWeight: 'bold'
       },
       left: 'center',
@@ -47,7 +49,7 @@ export const IssuesPRChart: React.FC<IssuesPRChartProps> = ({ issues, pullReques
     },
     legend: {
       orient: 'horizontal',
-      bottom: '8%',
+      bottom: isMobile ? 0 : '5%',
       textStyle: {
         color: '#6b7280',
         fontSize: 12,
@@ -60,33 +62,17 @@ export const IssuesPRChart: React.FC<IssuesPRChartProps> = ({ issues, pullReques
       {
         name: 'Issues',
         type: 'pie',
-        radius: ['25%', '45%'],
-        center: ['30%', '50%'],
+        radius: isMobile ? ['20%', '35%'] : ['25%', '45%'],
+        center: isMobile ? ['50%', '30%'] : ['30%', '50%'],
         data: [
-          { 
-            value: openIssues, 
-            name: 'Open Issues', 
-            itemStyle: { 
-              color: '#ef4444',
-              borderColor: '#ffffff',
-              borderWidth: 2
-            } 
-          },
-          { 
-            value: closedIssues, 
-            name: 'Closed Issues', 
-            itemStyle: { 
-              color: '#22c55e',
-              borderColor: '#ffffff',
-              borderWidth: 2
-            } 
-          }
+          { value: openIssues, name: 'Open Issues', itemStyle: { color: '#ef4444', borderColor: '#ffffff', borderWidth: 2 } },
+          { value: closedIssues, name: 'Closed Issues', itemStyle: { color: '#22c55e', borderColor: '#ffffff', borderWidth: 2 } }
         ],
         label: {
           show: true,
           position: 'outside',
           color: '#374151',
-          fontSize: 12,
+          fontSize: isMobile ? 10 : 12,
           fontWeight: 600,
           formatter: '{b}\n{c}'
         },
@@ -107,42 +93,18 @@ export const IssuesPRChart: React.FC<IssuesPRChartProps> = ({ issues, pullReques
       {
         name: 'Pull Requests',
         type: 'pie',
-        radius: ['25%', '45%'],
-        center: ['70%', '50%'],
+        radius: isMobile ? ['20%', '35%'] : ['25%', '45%'],
+        center: isMobile ? ['50%', '75%'] : ['70%', '50%'],
         data: [
-          { 
-            value: openPRs, 
-            name: 'Open PRs', 
-            itemStyle: { 
-              color: '#3b82f6',
-              borderColor: '#ffffff',
-              borderWidth: 2
-            } 
-          },
-          { 
-            value: mergedPRs, 
-            name: 'Merged PRs', 
-            itemStyle: { 
-              color: '#8b5cf6',
-              borderColor: '#ffffff',
-              borderWidth: 2
-            } 
-          },
-          { 
-            value: closedPRs - mergedPRs, 
-            name: 'Closed PRs', 
-            itemStyle: { 
-              color: '#6b7280',
-              borderColor: '#ffffff',
-              borderWidth: 2
-            } 
-          }
+          { value: openPRs, name: 'Open PRs', itemStyle: { color: '#3b82f6', borderColor: '#ffffff', borderWidth: 2 } },
+          { value: mergedPRs, name: 'Merged PRs', itemStyle: { color: '#8b5cf6', borderColor: '#ffffff', borderWidth: 2 } },
+          { value: closedPRs - mergedPRs, name: 'Closed PRs', itemStyle: { color: '#6b7280', borderColor: '#ffffff', borderWidth: 2 } }
         ],
         label: {
           show: true,
           position: 'outside',
           color: '#374151',
-          fontSize: 12,
+          fontSize: isMobile ? 10 : 12,
           fontWeight: 600,
           formatter: '{b}\n{c}'
         },
@@ -181,7 +143,7 @@ export const IssuesPRChart: React.FC<IssuesPRChartProps> = ({ issues, pullReques
           </div>
         </div>
       </div>
-      
+
       {totalIssues === 0 && totalPRs === 0 ? (
         <div className="text-center py-12">
           <div className="flex items-center justify-center gap-2 mb-4">
@@ -194,7 +156,7 @@ export const IssuesPRChart: React.FC<IssuesPRChartProps> = ({ issues, pullReques
       ) : (
         <ReactECharts
           option={option}
-          style={{ height: '350px', width: '100%' }}
+          style={{ height: isMobile ? '500px' : '350px', width: '100%' }}
         />
       )}
     </div>
